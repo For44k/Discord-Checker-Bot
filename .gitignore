@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+bot/.env
+api/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / Editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Archives & Temp files
+*.zip
+*.tar.gz

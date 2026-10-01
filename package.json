@@ -1,0 +1,37 @@
+{
+  "name": "checker-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx tsx bot/index.ts",
+    "build": "tsc",
+    "dev": "npx tsx watch bot/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@discordjs/voice": "^0.19.2",
+    "@napi-rs/canvas": "^1.0.6",
+    "@skyra/gifenc": "^1.0.1",
+    "adm-zip": "^0.6.0",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
+    "glob": "^13.0.6",
+    "mongoose": "^9.9.2",
+    "omggif": "^1.0.10",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^26.2.0",
+    "@types/omggif": "^1.0.5",
+    "@types/ws": "^8.18.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}
