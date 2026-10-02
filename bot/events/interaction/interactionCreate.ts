@@ -7,13 +7,13 @@ import {
 } from "discord.js";
 import { CheckerClient } from "../../core/client";
 import { logger } from "../../utils/logger/logger";
+import { handleSlashCommand } from "../../core/slashCommands";
 
 export default {
     name: Events.InteractionCreate,
     async execute(interaction: Interaction, client: CheckerClient) {
         try {
             if (interaction.isChatInputCommand()) {
-                const { handleSlashCommand } = await import("../../core/slashCommands");
                 await handleSlashCommand(interaction, client);
             } else if (interaction.isButton()) {
                 const btn = interaction as ButtonInteraction;

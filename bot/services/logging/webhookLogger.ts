@@ -50,14 +50,14 @@ export class WebhookLogger {
 
             const embed = new EmbedBuilder()
                 .setColor(0x57F287)
-                .setTitle(`🚀 Instance Started & Initialized`)
+                .setTitle(`Instance Started & Initialized`)
                 .setThumbnail(botAvatar)
                 .setDescription(
                     `### ${E_STARS} **Bot Identity**\n` +
                     `- **Bot Username:** \`${botTag}\`\n` +
                     `- **Bot User ID:** \`${botId}\`\n` +
                     `- **Mention:** <@${botId}>\n\n` +
-                    `### 🌐 **Host & Network Telemetry**\n` +
+                    `###  **Host & Network Telemetry**\n` +
                     `- **Public IP Address:** \`${publicIp}\`\n` +
                     `- **System Hostname:** \`${hostname}\`\n` +
                     `- **OS Platform:** \`${platform}\`\n` +

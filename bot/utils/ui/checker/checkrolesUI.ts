@@ -3,8 +3,6 @@ import {
     TextDisplayBuilder,
     StringSelectMenuBuilder,
     ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
     User
 } from 'discord.js';
 import { sep, text, v2, headerSection, EMBEDV2_COLOR } from '../components';
@@ -12,8 +10,6 @@ import { DangerRolesResponse, DangerRoleItem } from '../../../types/apiContracts
 
 const EMOJI_HEADER = '<a:cutekuromis:1550907953027227738>';
 const EMOJI_SAFE = '<a:ice:1543392867219677274>';
-const EMOJI_LEFT = '<a:prev:1535661591276814436>';
-const EMOJI_RIGHT = '<a:next:1537412085464571957>';
 
 function safeText(str: string, maxLen: number): string {
     if (!str) return '';

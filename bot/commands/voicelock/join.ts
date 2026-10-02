@@ -1,19 +1,23 @@
 import {
     Message,
+    Guild,
     ChannelType,
+    ComponentType,
     ChannelSelectMenuBuilder,
     ActionRowBuilder,
     ContainerBuilder,
-    PermissionsBitField
+    PermissionsBitField,
+    VoiceBasedChannel
 } from 'discord.js';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { VoiceLockStore } from '../../database/services/voiceLockStore';
 import { PermissionService } from '../../database/services/permissionStore';
 import { sep, text, v2 } from '../../utils/ui/components';
+import { logger } from '../../utils/logger/logger';
 
 const EMBEDV2_COLOR = 0xBBEDFF;
 
-export function connectToVoice(guild: any, channelId: string) {
+export function connectToVoice(guild: Guild, channelId: string) {
     try {
         return joinVoiceChannel({
             channelId,
@@ -23,7 +27,7 @@ export function connectToVoice(guild: any, channelId: string) {
             selfMute: false
         });
     } catch (e) {
-        console.error(`[VoiceLock] Failed to join voice channel ${channelId}:`, e);
+        logger.error(`[VoiceLock] Failed to join voice channel ${channelId}:`, e);
         return null;
     }
 }
@@ -43,16 +47,17 @@ export default {
     description: 'Lock the bot into a voice channel 24/7 permanently',
     aliases: ['lockvoice', 'voicelock', 'vcjoin'],
 
-    async execute(message: Message | any, args: string[]) {
+    async execute(message: Message, args: string[]) {
         const guild = message.guild;
         if (!guild) return message.reply('This command must be used in a server.');
 
-        const isOwner = guild.ownerId === (message.author?.id || message.user?.id);
+        const authorId = message.author.id;
+        const isOwner = guild.ownerId === authorId;
         const isAdmin = message.member?.permissions?.has(PermissionsBitField.Flags.Administrator);
         const allowedRoles = PermissionService.getRoles(guild.id);
         const allowedUsers = PermissionService.getUsers(guild.id);
         const hasAllowedRole = allowedRoles.length > 0 && message.member?.roles?.cache?.hasAny(...allowedRoles);
-        const hasAllowedUser = allowedUsers.includes(message.author?.id || message.user?.id);
+        const hasAllowedUser = allowedUsers.includes(authorId);
 
         if (!isOwner && !isAdmin && !hasAllowedRole && !hasAllowedUser) {
             const errC = new ContainerBuilder()
@@ -63,7 +68,7 @@ export default {
 
         if (args && args[0]) {
             const rawId = args[0].replace(/[<#>]/g, '').trim();
-            const targetChannel = guild.channels.cache.get(rawId);
+            const targetChannel = guild.channels.cache.get(rawId) as VoiceBasedChannel | undefined;
             if (targetChannel && (targetChannel.type === ChannelType.GuildVoice || targetChannel.type === ChannelType.GuildStageVoice)) {
                 connectToVoice(guild, targetChannel.id);
                 VoiceLockStore.setChannel(guild.id, targetChannel.id);
@@ -72,7 +77,7 @@ export default {
         }
 
         const channelSelect = new ChannelSelectMenuBuilder()
-            .setCustomId('join_voice_select')
+            .setCustomId(`join_voice_select:${authorId}`)
             .setPlaceholder('Select a voice channel to join...')
             .setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice);
 
@@ -91,11 +96,12 @@ export default {
         if (!replyMsg) return;
 
         const collector = replyMsg.createMessageComponentCollector({
+            componentType: ComponentType.ChannelSelect,
             time: 60000,
-            filter: (i: any) => i.user.id === (message.author?.id || message.user?.id)
+            filter: (i) => i.user.id === authorId
         });
 
-        collector.on('collect', async (interaction: any) => {
+        collector.on('collect', async (interaction) => {
             const channelId = interaction.values?.[0];
             if (!channelId) return;
 
@@ -105,7 +111,23 @@ export default {
             await interaction.update(buildJoinSuccessReply(channelId)).catch(async () => {
                 await replyMsg.edit(buildJoinSuccessReply(channelId)).catch(() => {});
             });
-            collector.stop();
+            collector.stop('handled');
+        });
+
+        collector.on('end', async (_, reason) => {
+            if (reason !== 'handled') {
+                channelSelect.setDisabled(true);
+                const disabledRow = new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(channelSelect);
+                const timedOutContainer = new ContainerBuilder()
+                    .setAccentColor(EMBEDV2_COLOR)
+                    .addTextDisplayComponents(text('# <a:miaw:1543607484390969404>  Select Voice Channel (Expired)'))
+                    .addSeparatorComponents(sep())
+                    .addTextDisplayComponents(text('Selection expired. Please run the command again if needed.'))
+                    .addSeparatorComponents(sep())
+                    .addActionRowComponents(disabledRow)
+                    .addSeparatorComponents(sep());
+                await replyMsg.edit(v2([timedOutContainer])).catch(() => {});
+            }
         });
     }
 };
