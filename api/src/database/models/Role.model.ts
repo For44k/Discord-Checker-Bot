@@ -14,8 +14,8 @@ export interface IRoleDocument extends Document {
 
 const RoleSchema = new Schema<IRoleDocument>(
     {
-        guildId: { type: String, required: true, index: true },
-        roleId: { type: String, required: true, index: true },
+        guildId: { type: String, required: true },
+        roleId: { type: String, required: true },
         name: { type: String, required: true },
         color: { type: String, default: "#000000" },
         position: { type: Number, default: 0 },

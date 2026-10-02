@@ -32,7 +32,6 @@ UserGuildStatsSchema.index({ userId: 1, guildId: 1 }, { unique: true });
 UserGuildStatsSchema.index({ guildId: 1, durationSeconds: -1 });
 UserGuildStatsSchema.index({ userId: 1, durationSeconds: -1 });
 UserGuildStatsSchema.index({ userId: 1, lastSeen: -1 });
-UserGuildStatsSchema.index({ guildId: 1, userId: 1 });
 
 export const UserGuildStatsModel: Model<IUserGuildStats> =
     mongoose.models.UserGuildStats || mongoose.model<IUserGuildStats>('UserGuildStats', UserGuildStatsSchema);

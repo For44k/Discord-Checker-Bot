@@ -24,7 +24,6 @@ const VoiceSessionSchema = new Schema<IVoiceSession>(
 
 VoiceSessionSchema.index({ userId: 1, guildId: 1 }, { unique: true });
 VoiceSessionSchema.index({ guildId: 1, channelId: 1 });
-VoiceSessionSchema.index({ userId: 1 });
 
 export const VoiceSessionModel: Model<IVoiceSession> =
     mongoose.models.VoiceSession || mongoose.model<IVoiceSession>('VoiceSession', VoiceSessionSchema);

@@ -12,8 +12,8 @@ export interface IMemberDocument extends Document {
 
 const MemberSchema = new Schema<IMemberDocument>(
     {
-        guildId: { type: String, required: true, index: true },
-        userId: { type: String, required: true, index: true },
+        guildId: { type: String, required: true },
+        userId: { type: String, required: true },
         roleIds: { type: [String], default: [] },
         rolesBitfield: { type: String, default: "0" },
         joinedAt: { type: Number, default: Date.now },
